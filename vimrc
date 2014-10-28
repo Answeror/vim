@@ -19,6 +19,10 @@ set shiftwidth=4
 set expandtab
 set smartindent
 
+" allow backspacing over everything in insert mode
+" http://stackoverflow.com/a/3534090
+set backspace=indent,eol,start
+
 " 80 column layout {{{
 if exists('+colorcolumn')
 	set colorcolumn=80
@@ -58,6 +62,29 @@ set undodir=$HOME/.vim/.undo
 set ul=1024
 " }}}
 
+" C++ header guard {{{
+function InsertCppHeaderGuard()
+py3 << endpy
+import vim
+from uuid import uuid4
+
+content = '\n'.join(vim.current.buffer[:])
+guarded = '''\
+#ifdef _MSC_VER
+    #pragma once
+#endif
+#ifndef __{0}__
+#define __{0}__
+
+{1}
+
+#endif // __{0}__'''.format(str(uuid4()).upper().replace('-', '_'), content)
+vim.current.buffer[:] = guarded.split('\n')
+endpy
+endfunction
+noremap <unique><silent><leader><leader>g :call InsertCppHeaderGuard()<cr>
+" }}}
+
 " vundle {{{
 set nocompatible
 filetype off
@@ -73,6 +100,7 @@ let g:solarized_base16=1
 Plugin 'surround.vim'
 Plugin 'oblitum/bufkill'
 Plugin 'scrooloose/nerdcommenter'
+let NERDSpaceDelims=1
 
 Plugin 'scrooloose/nerdtree'
 map <leader><leader>f :NERDTreeToggle<cr>
@@ -112,13 +140,56 @@ nnoremap <unique> <leader>j :wincmd J<cr>
 Plugin 'klen/python-mode'
 let g:pymode_rope = 0
 let g:pymode_python = 'python3'
-let g:pymode_lint_ignore = "E501,C901"
+let g:pymode_lint_ignore = "E731,E501,E116,E131,C901"
+" }}}
+
+"" taglist {{{
+"Plugin 'kylinwowo/taglist'
+"" Taglist plugin mapping
+"noremap <silent> <Leader>t :TlistToggle<cr>
+
+"" Taglist plugin config
+"let Tlist_Use_Right_Window = 1
+"let Tlist_Inc_Winwidth = 0
+"let Tlist_WinWidth = 45
+"let Tlist_GainFocus_On_ToggleOpen= 1
+"let Tlist_Ctags_Cmd = 'ctags'
+"let Tlist_Show_One_File = 1
+"" }}}
+
+" tagbar {{{
+Plugin 'majutsushi/tagbar'
+noremap <unique><silent><Leader>t :TagbarToggle<cr>
+let g:tagbar_iconchars = ['▸', '▾']
 " }}}
 
 Plugin 'bling/vim-airline'
 set laststatus=2
 
 Plugin 'auto_mkdir'
+
+" vim-latex {{{
+Plugin 'LaTeX-Suite-aka-Vim-LaTeX'
+let g:Tex_CompileRule_pdf = 'xelatex -interaction=nonstopmode $*'
+let g:Tex_MultipleCompileFormats = 'pdf'
+
+" IMPORTANT: win32 users will need to have 'shellslash' set so that latex
+" can be called correctly.
+set shellslash
+
+" IMPORTANT: grep will sometimes skip displaying the file name if you
+" search in a singe file. This will confuse Latex-Suite. Set your grep
+" program to always generate a file-name.
+set grepprg=grep\ -nH\ $*
+
+" OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
+" 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
+" The following changes the default filetype back to 'tex':
+let g:tex_flavor='latex'
+
+" Solve nmap confliction
+nmap <c-\> <Plug>IMAP_JumpForward
+" }}}
 
 call vundle#end()
 filetype plugin indent on
