@@ -13,15 +13,23 @@ let maplocalleader=','
 set nu
 nnoremap <silent><unique><leader>e :e $HOME/.vim/vimrc<cr>
 
-" indent
+" indent {{{
 set tabstop=4
 set shiftwidth=4
 set expandtab
 set smartindent
+" }}}
 
-" allow backspacing over everything in insert mode
+" allow backspacing over everything in insert mode {{{
 " http://stackoverflow.com/a/3534090
 set backspace=indent,eol,start
+" }}}
+
+"Set to auto read when a file is changed from the outside {{{
+if exists("&autoread")
+	set autoread
+endif
+" }}}
 
 " 80 column layout {{{
 if exists('+colorcolumn')
@@ -40,6 +48,7 @@ set magic
 map <space> /
 map <c-space> ?
 nnoremap <silent><leader>n :silent :noh<cr>
+set showmatch
 " }}}
 
 " encoding {{{
@@ -53,8 +62,6 @@ nmap <leader>x :xa!<cr>
 nmap <leader>w :w!<cr>
 nmap <leader>q :q<cr>
 " }}}
-
-set showmatch
 
 " undo {{{
 set undofile
@@ -85,6 +92,49 @@ endfunction
 noremap <unique><silent><leader><leader>g :call InsertCppHeaderGuard()<cr>
 " }}}
 
+" Set 7 lines to the curors - when moving vertical.. {{{
+set so=7
+" }}}
+
+" Pretty XML {{{
+function! DoPrettyXML()
+  " save the filetype so we can restore it later
+  let l:origft = &ft
+  set ft=
+  " delete the xml header if it exists. This will
+  " permit us to surround the document with fake tags
+  " without creating invalid xml.
+  1s/<?xml .*?>//e
+  " insert fake tags around the entire document.
+  " This will permit us to pretty-format excerpts of
+  " XML that may contain multiple top-level elements.
+  0put ='<PrettyXML>'
+  $put ='</PrettyXML>'
+  silent %!xmllint --format -
+  " xmllint will insert an <?xml?> header. it's easy enough to delete
+  " if you don't want it.
+  " delete the fake tags
+  2d
+  $d
+  " restore the 'normal' indentation, which is one extra level
+  " too deep due to the extra tags we wrapped around the document.
+  silent %<
+  " back to home
+  1
+  " restore the filetype
+  exe "set ft=" . l:origft
+endfunction
+command! PrettyXML call DoPrettyXML()
+" }}}
+
+" bufkill bd's: really do not mess with NERDTree buffer {{{
+nnoremap <silent> <backspace> :bd<cr>
+nnoremap <silent> <s-backspace> :bd!<cr>
+" Prevent :bd inside NERDTree buffer
+au FileType nerdtree cnoreabbrev <buffer> bd <nop>
+au FileType nerdtree cnoreabbrev <buffer> BD <nop>
+" }}}
+
 " vundle {{{
 set nocompatible
 filetype off
@@ -109,6 +159,8 @@ map <leader>f :NERDTreeFocus<cr>
 Plugin 'wincent/Command-T'
 nnoremap <silent><unique>,. :CommandT<cr>
 nnoremap <silent><unique>,, :CommandTBuffer<cr>
+set wildignore+=*.o,*.obj,.git,tmp,temp,cache,exp_*,build*,boost*,pstade*,*.swp,*.un~,*.egg-info,*.pyc,__pycache__
+let g:CommandTMaxFiles=40000
 
 function! WinMove(key)                                                                                         
     let t:curwin = winnr()                                                  
@@ -195,4 +247,6 @@ call vundle#end()
 filetype plugin indent on
 
 colorscheme solarized
+
+Bundle 'Glench/Vim-Jinja2-Syntax'
 " }}}
