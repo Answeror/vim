@@ -156,11 +156,14 @@ Plugin 'scrooloose/nerdtree'
 map <leader><leader>f :NERDTreeToggle<cr>
 map <leader>f :NERDTreeFocus<cr>
 
-Plugin 'wincent/Command-T'
-nnoremap <silent><unique>,. :CommandT<cr>
-nnoremap <silent><unique>,, :CommandTBuffer<cr>
-set wildignore+=*.o,*.obj,.git,tmp,temp,cache,exp_*,build*,boost*,pstade*,*.swp,*.un~,*.egg-info,*.pyc,__pycache__
-let g:CommandTMaxFiles=40000
+" Plugin 'wincent/Command-T'
+" nnoremap <silent><unique>,. :CommandT<cr>
+" nnoremap <silent><unique>,, :CommandTBuffer<cr>
+" set wildignore+=*.o,*.obj,.git,tmp,temp,cache,exp_*,build*,boost*,pstade*,*.swp,*.un~,*.egg-info,*.pyc,__pycache__
+" let g:CommandTMaxFiles=40000
+
+Plugin 'kien/ctrlp.vim'
+let g:ctrlp_map = ',.'
 
 function! WinMove(key)                                                                                         
     let t:curwin = winnr()                                                  
@@ -241,6 +244,11 @@ let g:tex_flavor='latex'
 
 " Solve nmap confliction
 nmap <c-\> <Plug>IMAP_JumpForward
+" }}}
+
+" Google Protocal Buffer {{{
+Plugin 'uarun/vim-protobuf'
+au BufRead,BufNewFile *.proto setfiletype proto
 " }}}
 
 call vundle#end()
