@@ -135,6 +135,9 @@ au FileType nerdtree cnoreabbrev <buffer> bd <nop>
 au FileType nerdtree cnoreabbrev <buffer> BD <nop>
 " }}}
 
+set exrc
+set secure
+
 " vundle {{{
 set nocompatible
 filetype off
@@ -244,6 +247,9 @@ let g:tex_flavor='latex'
 
 " Solve nmap confliction
 nmap <c-\> <Plug>IMAP_JumpForward
+
+au BufNewFile,BufRead *.tex setlocal formatoptions+=n
+au BufNewFile,BufRead *.tex let &l:flp = '^\s*\\\(end\|item\)\>'
 " }}}
 
 " Google Protocal Buffer {{{
