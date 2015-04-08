@@ -248,13 +248,22 @@ let g:tex_flavor='latex'
 " Solve nmap confliction
 nmap <c-\> <Plug>IMAP_JumpForward
 
-au BufNewFile,BufRead *.tex setlocal formatoptions+=n
-au BufNewFile,BufRead *.tex let &l:flp = '^\s*\\\(end\|item\)\>'
+au Filetype tex setlocal formatoptions+=nmM
+" au Filetype tex let &l:flp = '^\s*\\\(end\|item\)\>'
+au Filetype tex let &l:flp = '^\s*\\\(item\|end\|begin\)\s*'
 " }}}
 
 " Google Protocal Buffer {{{
 Plugin 'uarun/vim-protobuf'
 au BufRead,BufNewFile *.proto setfiletype proto
+" }}}
+
+" Markdown {{{
+autocmd Filetype markdown setlocal fo+=mM
+" }}}
+
+" Doxygen {{{
+Plugin 'DoxygenToolkit.vim'
 " }}}
 
 call vundle#end()
