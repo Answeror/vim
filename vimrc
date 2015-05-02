@@ -158,6 +158,7 @@ let NERDSpaceDelims=1
 Plugin 'scrooloose/nerdtree'
 map <leader><leader>f :NERDTreeToggle<cr>
 map <leader>f :NERDTreeFocus<cr>
+let NERDTreeIgnore=['\.pyc$', '\.aux$', '\.nav$', '\.snm$', '\.toc$']
 
 " Plugin 'wincent/Command-T'
 " nnoremap <silent><unique>,. :CommandT<cr>
@@ -264,6 +265,10 @@ autocmd Filetype markdown setlocal fo+=mM
 
 " Doxygen {{{
 Plugin 'DoxygenToolkit.vim'
+" }}}
+
+" Split window {{{
+Plugin 'tomtom/tinykeymap_vim'
 " }}}
 
 call vundle#end()
