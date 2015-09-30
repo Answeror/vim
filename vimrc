@@ -13,6 +13,43 @@ let maplocalleader=','
 set nu
 nnoremap <silent><unique><leader>e :e $HOME/.vim/vimrc<cr>
 
+" tmux {{{
+if exists('$ITERM_PROFILE')
+  if exists('$TMUX') 
+    let &t_SI = "\<Esc>[3 q"
+    let &t_EI = "\<Esc>[0 q"
+  else
+    let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+    let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+  endif
+end
+
+" for tmux to automatically set paste and nopaste mode at the time pasting (as
+" happens in VIM UI)
+
+function! WrapForTmux(s)
+  if !exists('$TMUX')
+    return a:s
+  endif
+
+  let tmux_start = "\<Esc>Ptmux;"
+  let tmux_end = "\<Esc>\\"
+
+  return tmux_start . substitute(a:s, "\<Esc>", "\<Esc>\<Esc>", 'g') . tmux_end
+endfunction
+
+let &t_SI .= WrapForTmux("\<Esc>[?2004h")
+let &t_EI .= WrapForTmux("\<Esc>[?2004l")
+
+function! XTermPasteBegin()
+  set pastetoggle=<Esc>[201~
+  set paste
+  return ""
+endfunction
+
+inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+" }}}
+
 " indent {{{
 set tabstop=4
 set shiftwidth=4
@@ -249,6 +286,9 @@ let g:tex_flavor='latex'
 " Solve nmap confliction
 nmap <c-\> <Plug>IMAP_JumpForward
 
+" Single space after dot
+" http://vim.1045645.n5.nabble.com/format-a-paragraph-with-gq-td1189411.html
+au Filetype tex setlocal nojs
 au Filetype tex setlocal formatoptions+=nmM
 " au Filetype tex let &l:flp = '^\s*\\\(end\|item\)\>'
 au Filetype tex let &l:flp = '^\s*\\\(item\|end\|begin\)\s*'
